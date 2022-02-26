@@ -55,7 +55,10 @@ class TBWF {
                 console.log(chalk_1.default.green('build created successfully'));
                 console.log(chalk_1.default.blueBright('Minifying build'));
                 fs_1.default.writeFileSync('./build/bundle.min.js', uglify_js_1.default.minify(fs_1.default.readFileSync('./build/bundle.js', 'utf-8'), {
-                    mangle: false
+                    mangle: false,
+                    compress: {
+                        dead_code: true
+                    }
                 }).code);
                 console.log(chalk_1.default.green('build changed from ') +
                     chalk_1.default.yellow(fs_1.default.statSync('./build/bundle.js').size / 1000) +

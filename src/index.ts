@@ -44,7 +44,10 @@ export class TBWF {
                 console.log(chalk.blueBright('Minifying build'))
                 fs.writeFileSync('./build/bundle.min.js',
                     UglifyJS.minify(fs.readFileSync('./build/bundle.js', 'utf-8'), {
-                        mangle: false
+                        mangle: false,
+                        compress: {
+                            dead_code: true
+                        }
                     }).code)
                 console.log(
                     chalk.green('build changed from ') +
