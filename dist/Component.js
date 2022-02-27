@@ -7,15 +7,19 @@ const Element_1 = __importDefault(require("./Element"));
 class Component {
     constructor(state) {
         this.state = {};
+        this._state = state || {};
+        if (typeof document != "undefined")
+            this._state = eval(`_${this.constructor.name.replace(/\s/g, '')}State`);
+        let sp = this._state;
         const reloadF = () => this.reload();
         if (typeof state != 'undefined') {
-            for (let k of Object.keys(state))
+            for (let k of Object.keys(this._state))
                 Object.defineProperty(this.state, k, {
                     get() {
-                        return state[k];
+                        return sp[k];
                     },
                     set(value) {
-                        state[k] = value;
+                        sp[k] = value;
                         reloadF();
                     }
                 });
@@ -32,6 +36,8 @@ class Component {
     reload() {
         var _a;
         const id = this.constructor.name.replace(/\s/g, '');
+        if (typeof document != "undefined")
+            this._state = eval(`_${id}State`);
         if (typeof document != 'undefined') {
             const elem = document.querySelector(`[tbwf-id="${id}"]`);
             // @ts-ignore
@@ -41,11 +47,21 @@ class Component {
     _render(args, isMain, bundlePath) {
         var _a, _b, _c;
         // render
+        if (typeof document == 'undefined')
+            this.beforeMount();
         var elem = this.render(args || {});
         if (elem == null)
             elem = (0, Element_1.default)('div', {}, undefined, null);
         // add script
+        if (elem != null) {
+            const win = elem.DOM == null ? window : elem.DOM.window;
+            // state
+            const stateScript = win.document.createElement('script');
+            stateScript.innerHTML = `var _${this.constructor.name.replace(/\s/g, '')}State=${JSON.stringify(this._state)};`;
+            elem.node.appendChild(stateScript);
+        }
         if (elem != null && isMain) {
+            // bundle
             const script = (_a = elem.DOM) === null || _a === void 0 ? void 0 : _a.window.document.createElement('script');
             script === null || script === void 0 ? void 0 : script.setAttribute('src', bundlePath || '/public/bundle.min.js');
             (_c = (_b = elem === null || elem === void 0 ? void 0 : elem.DOM) === null || _b === void 0 ? void 0 : _b.window.document.body) === null || _c === void 0 ? void 0 : _c.appendChild(script);
@@ -57,6 +73,8 @@ class Component {
     render(args) {
         return null;
     }
+    onMount() { }
+    beforeMount() { }
     static Load(component) {
         if (typeof document == 'undefined')
             return;

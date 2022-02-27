@@ -36,8 +36,8 @@ class TBWF {
         const fp = path_1.default.join((_b = require.main) === null || _b === void 0 ? void 0 : _b.path, component);
         const c = require(fp);
         this.browserify.add(fp);
-        const instance = new c();
         this.app.get(route, (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const instance = new c();
             const r = instance._render({}, true);
             if (r === null)
                 res.status(500).json({ error: 'could not find required component' });

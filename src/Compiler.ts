@@ -64,16 +64,32 @@ function expectToken(tokens: [Token], p: number, type: TokenType, data?: string)
 
 function expectTagDefinition(tokens: [Token], p: number) {
     if (expectToken(tokens, p, TokenType.BRACKET, '<') != null) {
+        // tag
         ++p
         const tag = expectToken(tokens, p, TokenType.TEXT)?.data
         console.log(tag)
         ++p
         let temp: any = ''
         while ((temp = expectArgument(tokens, p)) != null) {
+            // arg
             console.log(temp)
             p = temp.p
         }
+        if (!expectToken(tokens, p, TokenType.BRACKET, '>')) return null
+        ++p
+        // content
+        while ((temp = expectTagDefinition(tokens, p)) != null) {
 
+        }
+
+    } else if (expectToken(tokens, p, TokenType.TEXT) != null) {
+        let str = expectToken(tokens, p, TokenType.TEXT)?.data + ' '
+        ++p
+        while (expectToken(tokens, p, TokenType.TEXT) != null) {
+            str += (expectToken(tokens, p, TokenType.TEXT)?.data || '') + ' '
+            ++p
+        }
+        console.log(str.trim())
     }
 }
 

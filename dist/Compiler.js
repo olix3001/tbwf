@@ -67,18 +67,34 @@ function expectToken(tokens, p, type, data) {
     return (tokens[p].type == type && (data == undefined || tokens[p].data == data)) ? tokens[p] : null;
 }
 function expectTagDefinition(tokens, p) {
-    var _a;
+    var _a, _b, _c;
     if (expectToken(tokens, p, TokenType.BRACKET, '<') != null) {
+        // tag
         ++p;
         const tag = (_a = expectToken(tokens, p, TokenType.TEXT)) === null || _a === void 0 ? void 0 : _a.data;
         console.log(tag);
         ++p;
         let temp = '';
         while ((temp = expectArgument(tokens, p)) != null) {
+            // arg
             console.log(temp);
             p = temp.p;
         }
-        console.log(temp);
+        if (!expectToken(tokens, p, TokenType.BRACKET, '>'))
+            return null;
+        ++p;
+        // content
+        while ((temp = expectTagDefinition(tokens, p)) != null) {
+        }
+    }
+    else if (expectToken(tokens, p, TokenType.TEXT) != null) {
+        let str = ((_b = expectToken(tokens, p, TokenType.TEXT)) === null || _b === void 0 ? void 0 : _b.data) + ' ';
+        ++p;
+        while (expectToken(tokens, p, TokenType.TEXT) != null) {
+            str += (((_c = expectToken(tokens, p, TokenType.TEXT)) === null || _c === void 0 ? void 0 : _c.data) || '') + ' ';
+            ++p;
+        }
+        console.log(str.trim());
     }
 }
 function expectArgument(tokens, p) {

@@ -26,8 +26,8 @@ export class TBWF {
         const fp = path.join(require.main?.path, component)
         const c = require(fp)
         this.browserify.add(fp)
-        const instance = new c()
         this.app.get(route, async (req: express.Request, res: express.Response) => {
+            const instance = new c()
             const r = instance._render({}, true)
             if (r === null) res.status(500).json({ error: 'could not find required component' })
             else res.send(r.toHTML())
